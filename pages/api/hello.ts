@@ -7,48 +7,52 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { docs } = req.body;
+  try {
+    const { docs } = req.body;
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(
-    `https://www.bursamalaysia.com/market_information/equities_prices?page=${docs}`,
-    {
-      waitUntil: "networkidle0",
-      timeout: 50000,
-    }
-  );
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(
+      `https://www.bursamalaysia.com/market_information/equities_prices?page=${docs}`,
+      {
+        waitUntil: "networkidle0",
+        timeout: 50000,
+      }
+    );
 
-  const data = await page.evaluate(() => {
-    const tds = Array.from(document.querySelectorAll("table tr td"));
-    return tds.map((td) => td?.textContent?.replace(/^\s+|\s+$/g, ""));
-  });
-  const headers = [
-    "NO",
-    "NAME",
-    "CODE",
-    "REM",
-    "LAST DONE",
-    "LACP",
-    "CHG",
-    "%CHG",
-    "VOL ('00)",
-    "BUY VOL ('00)",
-    "BUY",
-    "SELL",
-    "SELL VOL",
-    "HIGH",
-    "LOW",
-    "CODE 2",
-  ];
-  const result = _.chunk(data, 16)?.map((d: any[]) => {
-    const res = d?.reduce((p, v, i) => {
-      return {
-        ...p,
-        [headers[i]]: v,
-      };
-    }, {});
-    return res;
-  });
-  return res.status(200).json({ result });
+    const data = await page.evaluate(() => {
+      const tds = Array.from(document.querySelectorAll("table tr td"));
+      return tds.map((td) => td?.textContent?.replace(/^\s+|\s+$/g, ""));
+    });
+    const headers = [
+      "NO",
+      "NAME",
+      "CODE",
+      "REM",
+      "LAST DONE",
+      "LACP",
+      "CHG",
+      "%CHG",
+      "VOL ('00)",
+      "BUY VOL ('00)",
+      "BUY",
+      "SELL",
+      "SELL VOL",
+      "HIGH",
+      "LOW",
+      "CODE 2",
+    ];
+    const result = _.chunk(data, 16)?.map((d: any[]) => {
+      const res = d?.reduce((p, v, i) => {
+        return {
+          ...p,
+          [headers[i]]: v,
+        };
+      }, {});
+      return res;
+    });
+    return res.status(200).json({ result });
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
 }
