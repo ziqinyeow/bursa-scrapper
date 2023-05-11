@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
 import _ from "lodash";
+import chromium from "chrome-aws-lambda";
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,7 +11,14 @@ export default async function handler(
   try {
     const { docs } = req.body;
 
-    const browser = await puppeteer.launch();
+    // const browser = await puppeteer.launch();
+    const browser = await chromium.puppeteer.launch({
+      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true,
+    });
     const page = await browser.newPage();
     await page.goto(
       `https://www.bursamalaysia.com/market_information/equities_prices?page=${docs}`,
@@ -53,6 +61,7 @@ export default async function handler(
     });
     return res.status(200).json({ result });
   } catch (error) {
+    console.log(error);
     return res.status(400).json({ error });
   }
 }
