@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer";
 import _ from "lodash";
 import chromium from "chrome-aws-lambda";
 
@@ -19,6 +19,15 @@ export default async function handler(
       headless: true,
       ignoreHTTPSErrors: true,
     });
+    // const browser = await puppeteer.launch({
+    //   args: chromium.args,
+    //   defaultViewport: chromium.defaultViewport,
+    //   // @ts-ignore
+    //   executablePath: await chromium.executablePath(
+    //     "https://github.com/Sparticuz/chromium/releases/download/v113.0.1/chromium-v113.0.1-pack.tar"
+    //   ),
+    //   headless: chromium.headless,
+    // });
     const page = await browser.newPage();
     await page.goto(
       `https://www.bursamalaysia.com/market_information/equities_prices?page=${docs}`,
