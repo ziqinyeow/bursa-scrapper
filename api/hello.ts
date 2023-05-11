@@ -1,13 +1,13 @@
 // @ts-nocheck
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // import type { NextApiRequest, NextApiResponse } from "next";
-// // import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer";
 // import _ from "lodash";
 // import chromium from "chrome-aws-lambda";
 const _ = require("lodash");
 const chromium = require("chrome-aws-lambda");
 
-module.exports.handler = (req, res) => {
+module.exports.handler = async (req, res) => {
   try {
     const { docs } = req.body;
 
