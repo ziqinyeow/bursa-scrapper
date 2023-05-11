@@ -7,7 +7,7 @@
 const _ = require("lodash");
 const chromium = require("chrome-aws-lambda");
 
-export default async function handler(req, res) {
+module.exports.handler = (req, res) => {
   try {
     const { docs } = req.body;
 
@@ -75,4 +75,4 @@ export default async function handler(req, res) {
     console.log(error);
     return res.status(400).json({ error });
   }
-}
+};
